@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Time Zone Offsets</title>
+</head>
+<body>
+  <pre id="output">Loading...</pre>
+  <script>
+    const allTimeZones = Intl.supportedValuesOf("timeZone");
+
+    function formatOffsetName(tz) {
+      const date = new Date();
+      const formatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        timeZoneName: "shortOffset",
+      });
+
+      const parts = formatter.formatToParts(date);
+      const offsetPart = parts.find(p => p.type === "timeZoneName");
+
+      if (!offsetPart) return `(unknown) ${tz}`;
+
+      const match = offsetPart.value.match(/GMT([+-]\d{1,2})(?::(\d{2}))?/);
+      if (!match) return `(unknown) ${tz}`;
+
+      const hours = parseInt(match[1], 10);
+      const minutes = match[2] ? parseInt(match[2], 10) : 0;
+      const sign = hours >= 0 ? "+" : "-";
+      const paddedMinutes = minutes.toString().padStart(2, "0");
+
+      return `${sign}${Math.abs(hours)}${minutes > 0 ? ":" + paddedMinutes : ""} (${tz})`;
+    }
+
+    const formattedTimeZones = allTimeZones.map(formatOffsetName).sort();
+    document.getElementById("output").textContent = formattedTimeZones.join("\n");
+  </script>
+</body>
+</html>
