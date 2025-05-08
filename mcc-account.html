@@ -462,11 +462,44 @@
       document.getElementById('result').className = 'message success';
       document.getElementById('result').innerText = "Đang xử lý...";
 
-      setTimeout(() => {
-        document.getElementById('result').innerText = "";
-        document.getElementById('successModal').style.display = 'flex';
-      }, 500);
+//cần bỏ
+      // setTimeout(() => {
+      //   document.getElementById('result').innerText = "";
+      //   document.getElementById('successModal').style.display = 'flex';
+      // }, 500);
+
+
+    fetch('http://localhost:8080/api/google-ads/create-subaccount', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    managerAccountId,
+    accountName,
+    currencyCode,
+    timeZone,
+    numberOfAccount
+  })
+})
+.then(response => {
+  if (!response.ok) throw new Error('Lỗi tạo sub-account');
+  return response.text();
+})
+.then(data => {
+  document.getElementById('result').className = 'message success';
+  document.getElementById('result').innerText = data;
+  document.getElementById('successModal').style.display = 'flex';
+})
+.catch(error => {
+  document.getElementById('result').className = 'message failure';
+  document.getElementById('result').innerText = "Lỗi: " + error.message;
+});
+
+
     });
+
+
 
     // Đóng modal khi bấm Xác nhận
     document.getElementById('confirmBtn').addEventListener('click', function() {
